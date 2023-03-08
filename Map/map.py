@@ -1,20 +1,21 @@
-from edge import Edge 
-from chooser import Chooser
-from map_misc import build_set, build_graph, path_to_directions, random_words
+from queue import Queue
+from map_misc_fun import rel_dir
+
+def path_to_directions(path): 
+    directions = Queue()
+    from_inter = None
+
+    for elem in path: 
+        if isinstance(elem, tuple):
+            if from_inter is not None: 
+                directions.put(rel_dir(from_inter, elem))
+            from_inter = elem
+
+    return directions
 
 class Map: 
-    def __init__(self, y_inters, x_inters, blk_height, blk_width, street_names = None):
-        required_streets = (y_inters * 2 * (x_inters - 1)) + (x_inters * 2 * (y_inters - 1))
-
-        if street_names is None: 
-            street_names = random_words(required_streets, 3, 6, True)
-        
-        self.street_names = build_set(street_names) 
-
-        if self.street_names == None or len(self.street_names) < required_streets: 
-            raise Exception("Secuencia de calles ingresada inválida")
-
-        self.graph = build_graph(y_inters, x_inters, blk_height, blk_width, Chooser(street_names))
+    def __init__(self, graph):
+        self.graph = graph
 
     def get_directions(self, init_street, streets_to_visit, max_visits = 1): 
         visits = {key: 0 for key in self.graph}
@@ -50,8 +51,9 @@ class Map:
                 visits[adj[0]] -= 1
 
     def mod_street(self, street_name, change):
-        if street_name not in self.street_names: 
-            raise Exception("Calle inválida")
+        if street_name not in self.graph: 
+            raise Exception('Calle inexistente')
+        
         list(self.graph[street_name].values())[0].mod_w(change)
 
         for node in self.graph:
@@ -59,14 +61,11 @@ class Map:
                 self.graph[node][street_name].mod_w(change)
 
     def restore_street(self, street_name): 
-        if street_name not in self.street_names: 
-            raise Exception("Calle inválida")
+        if street_name not in self.graph: 
+            raise Exception("Calle inexistente")
+        
         list(self.graph[street_name].values())[0].restore()
 
         for node in self.graph:
             if street_name in self.graph[node]: 
                 self.graph[node][street_name].restore()
-
-    def get_street_names(): 
-        
-        pass
