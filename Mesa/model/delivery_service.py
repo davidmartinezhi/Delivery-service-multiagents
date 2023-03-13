@@ -2,9 +2,12 @@ from mesa import Model
 from mesa.space import SingleGrid
 from mesa.time import SimultaneousActivation
 from map import Map
-from bridge import Bridge 
+#from bridge import Bridge 
 from itertools import permutations
 from random import choice, choices, randint, random
+from package_administration import Package, PackagesAdministration
+from ..agents.house import House
+
 
 class TrafficManager(): 
     def __init__(self, map, streets, congested, min_traffic, max_traffic, max_num_jams = 5, jam_prob = 0.1, phase_duration = 100): 
@@ -55,16 +58,16 @@ class DeliveryService(Model):
         self.dispatch_coord = dispatch_coord
         self.dispatch_street = dispatch_street
 
-        self.bridge = Bridge()
+        #self.bridge = Bridge()
         self.traffic_manager = TrafficManager(self.map, streets, congested, 10, 40)
-        self.orders = Orders()
+        self.orders = PackagesAdministration()
 
         self.place_houses(house_positions)
         self.deliveryCars = {car_id: DeliveryCar(car_capacities[i]) for car_id in range(num_cars)}
 
     def place_houses(self, house_positions): 
         for pos in house_positions: 
-            self.mesa_grid.place_agent(House(*house_positions[pos]), pos)
+            self.mesa_grid.place_agent(House(self, *house_positions[pos]), pos)
 
     def is_intersection(self, x, y): 
         return self.grid[x][y] == 0
