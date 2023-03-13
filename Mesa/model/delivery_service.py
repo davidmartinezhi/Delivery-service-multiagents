@@ -99,7 +99,9 @@ class DeliveryService(Model):
                 if self.orders.get_num_orders() > 0: 
                     to_deliver = self.orders.get_orders(self.deliveryCars[car_id].capacity)
                     to_deliver_streets = [package.street for package in to_deliver]
+
                     self.deliveryCars[car_id].set_tour(to_deliver, self.map.get_directions(self.dispatch_street, to_deliver_streets))
+                    
                     self.mesa_grid.place_agent(self.deliveryCars[car_id], self.dispatch_coord)
 
         self.bridge.send_data(self.car_coordinates(), self.orders.active_orders(), self.traffic_manager.get_traffic())

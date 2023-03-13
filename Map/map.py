@@ -3,6 +3,7 @@ from map_misc import rel_dir
 from map_sm import find_best_s_order
 from map_dijkstra import min_path_dijkstra
 from map_data import GRAPH
+from time import time 
 
 def path_to_directions(path): 
     directions = Queue()
@@ -23,18 +24,19 @@ class Map:
     def build_path(self, s_order): 
         path = [s_order[0]]
         for i in range(len(s_order) - 1):
-            print(min_path_dijkstra(self.graph, s_order[i], s_order[i+1], False))
             path += min_path_dijkstra(self.graph, s_order[i], s_order[i+1], False)
 
-        print(path)
         return path 
-    
-    def get_directions(self, init_street, streets_to_visit): 
+        
+    def get_directions_SM(self, init_street, streets_to_visit): 
         if len(streets_to_visit) == 1: 
             best_s_order = [init_street] + streets_to_visit + [init_street]
         else: 
             best_s_order = find_best_s_order(self.graph, [init_street] + streets_to_visit + [init_street])
         return path_to_directions(self.build_path(best_s_order))
+    
+    def get_directions_naive(self, init_street, streets_to_visit): 
+        return path_to_directions(self.build_path([init_street] + streets_to_visit + [init_street])) 
 
     def get_directions_BF(self, init_street, streets_to_visit, max_visits = 1): 
         visits = {key: 0 for key in self.graph}
@@ -88,10 +90,3 @@ class Map:
         for node in self.graph:
             if street_name in self.graph[node]: 
                 self.graph[node][street_name].restore()
-
-map = Map(GRAPH)
-map.mod_street('Rodrigo', 10000)
-directions = map.get_directions((0,0), ['Roomba', 'Torreon'])
-
-while not directions.empty(): 
-    print(directions.get())

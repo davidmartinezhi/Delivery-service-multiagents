@@ -19,9 +19,8 @@ def find_s_order_dis(graph, s_order, pairs):
     return dis 
 
 # Terminar ejecución si se han explorado todas las permutaciones. 
-# Modificar cambio en la temperatura. 
 def find_best_s_order(graph, init_s_order, init_temp = 1 * 10**100, end_temp = 0.1, cool_factor = 0.95, num_restarts = 1): 
-    get_prob = lambda diff, temp: math.e ** (-diff/temp) 
+    get_prob = lambda diff, temp: math.exp(-diff/temp) 
     temp = init_temp
     pairs = {}
     curr_s_order = {'dis': find_s_order_dis(graph, init_s_order, pairs), 's_order': init_s_order}
@@ -38,6 +37,7 @@ def find_best_s_order(graph, init_s_order, init_temp = 1 * 10**100, end_temp = 0
                 best_s_order = new_s_order if new_s_order['dis'] < best_s_order['dis'] else best_s_order
             
             temp *= cool_factor
+            num_iter += 1
         
         temp = init_temp
         curr_s_order = best_s_order
