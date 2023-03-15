@@ -1,12 +1,18 @@
 from mesa import Model
 from mesa.space import SingleGrid
 from mesa.time import SimultaneousActivation
-from map import Map
 #from bridge import Bridge 
 from itertools import permutations
 from random import choice, choices, randint, random
 from package_administration import Package, PackagesAdministration
-from ..agents.house import House
+
+
+from ..map import map, map_data
+
+#STREETS, HOUSE_POSITIONS, GRAPH, GRID
+
+from mesa_code.agents import delivery_car, house
+
 
 
 class TrafficManager(): 
@@ -32,7 +38,7 @@ class TrafficManager():
         if self.in_peak_traffic: 
             for street in self.congested_streets: 
                 traffic = randint(self.min_traffic, self.max_traffic)
-                map.mod_street(street, traffic)
+                self.map.mod_street(street, traffic)
                 self.affected_streets[street] = traffic 
 
         for _ in self.max_num_jams: 
@@ -63,7 +69,7 @@ class DeliveryService(Model):
         self.orders = PackagesAdministration()
 
         self.place_houses(house_positions)
-        self.deliveryCars = {car_id: DeliveryCar(car_capacities[i]) for car_id in range(num_cars)}
+        self.deliveryCars = {car_id: DeliveryCar(car_capacities[car_id]) for car_id in range(num_cars)}
 
     def place_houses(self, house_positions): 
         for pos in house_positions: 
@@ -111,11 +117,21 @@ class DeliveryService(Model):
         
 # Delivery service 
     # Mantiene:  
-    # - Ordenes (Orders)
-    # - Modificaciones en el trafico del mapa (TrafficManager)
-    # - Carros en operacion
+    # - Ordenes (Orders) 
+    # - Modificaciones en el trafico del mapa (TrafficManager) 
+    # - Carros en operacion 
 
     # Envia a Unity, en cada paso: 
-    # - La posición actual de cada carro mensajero (diccionario)
+    # - La posición actual de cada carro mensajero (diccionario) 
     # - El estado de cada casa: el número de pedidos pendientes por casa. 
     # - La cantidad de trafico por calle. 
+    
+print("siu")
+if __name__ == "__main__":
+
+    test = DeliveryService(map.STREETS, "Torreon", map.HOUSE_POSITIONS, map.GRID, map.GRAPH, (0,11),"Ocaña",10,0)
+
+    print("siu")
+
+    while True:
+        test.step()

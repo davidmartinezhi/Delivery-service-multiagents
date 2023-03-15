@@ -1,5 +1,6 @@
 from mesa import Agent
 import uuid
+from ..model.package_administration import Package
 
 class House(Agent):
 
