@@ -2,41 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
-
-// ------Clase que se obtendría del json-------
-public class Frame {
-    public Dictionary<int, Info> frame { get; set; }
-}
-
-public class Info {
-    public Dictionary<string, int[]> posiciones { get; set; }
-    public Dictionary<int[], int> calles { get; set; }
-    public Dictionary<int[], int> paquetes { get; set; }
-}
-
-
-
-
-// ---- Request de servidor (aun falta de implemntar)-------
 public class web : MonoBehaviour
 {
-    [ContextMenu("Leer simple")]
-    public void LeerSimple(){
-        StartCoroutine(CorrutinaLeerSimple());
+    // ---------- Definición de struct ----------
+    [System.Serializable]
+    public struct Info {
+        public Dictionary<string, int[]> posiciones;
+        public Dictionary<string, int> calles;
+        public Dictionary<string, int> paquetes;
     }
 
-    IEnumerator CorrutinaLeerSimple(){
-        UnityWebRequest server = UnityWebRequest.Get(uri)
+    [System.Serializable]
+    public struct Paso {
+        public Dictionary<int, Info> paso;
+    }
+
+
+
+
+    public Paso pasoCarro; // struct para poder manipular los datos
+    public string uri; // URL del servidor
+
+
+    // ---------- Request de servidor ----------
+
+    [ContextMenu("Leer JSON")]
+    public void LeerJSON(){
+        StartCoroutine(CorrutinaLeerJSON());
+    }
+
+    IEnumerator CorrutinaLeerJSON(){
+        UnityWebRequest server = UnityWebRequest.Get(uri);
         yield return server.SendWebRequest();
 
         // condición si vuelve el request
         if(!server.isNetworkError && !server.isHttpError){
-            Debug.Log(server.downloadHandler.text);
-        
+            pasoCarro = JsonUtility.FromJson<Paso>(web.downloadHandler.text);
+
         } else {
-            Debug.LogWarning("hubo un problema")
+            Debug.LogWarning("Hubo un problema con la lectura de los datos");
         } 
-    }   
-}
+    }
 
