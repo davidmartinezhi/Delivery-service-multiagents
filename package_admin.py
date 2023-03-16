@@ -1,23 +1,18 @@
-from mesa import Agent, model
 from random import choice
-import queue
-import uuid
 
-
-class Package(Agent):
-    def __init__(self, unique_id, model, zipNumber, blockNumber, streetAddress, houseNumber):
-        super().__init__(unique_id, model)
+class Package():
+    def __init__(self, id, zipNumber, blockNumber, streetAddress, houseNumber):
+        self.id = id
         self.zipNumber = None
         self.blockNumber = None
         self.streetAddress = None
         self.houseNumber = None
         
-
-class PackageAdmin(Agent):
+#Agregar que regrese paquetes entregados y paquetes activos
+class PackageAdmin():
     ZIP_CODES = ["27018", "44789", "89943"]
         
-    def __init__(self, unique_id, model, packagesLimit = 10):
-        super().__init__(unique_id, model)
+    def __init__(self, packagesLimit = 10):
         self.packagesLimit = packagesLimit
         self.packagesToDeliver = []
         self.houses = []
@@ -231,9 +226,3 @@ class PackageAdmin(Agent):
         #add order
         self.packagesToDeliver.insert(0, order) #packagesToDeliver, O(n)
         self.ordersAdm[house.zipNumber][house.blockNumber][house.streetAddress].append(order)
-         
-    def step(self):
-        pass
-                
-        
-        

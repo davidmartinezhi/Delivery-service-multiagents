@@ -3,11 +3,12 @@ from mesa.space import SingleGrid
 from mesa.time import SimultaneousActivation
 from itertools import permutations
 
-from map import Map
+from map_code.map import Map
+from package_admin import PackageAdmin
 from traffic_manager import TrafficManager
         
 class DeliveryService(Model): 
-    def __init__(self, street_positons, congested, house_positions, grid, graph, dispatch_coord, dispatch_street, car_capacities, num_cars = 1): 
+    def __init__(self, street_positons, congested, house_positions, grid, graph, dispatch_coord, dispatch_street, car_capacity, num_cars = 1, optimized = True): 
         self.grid = grid
         self.grid_width = len(grid)
         self.grid_height = len(grid[0])
