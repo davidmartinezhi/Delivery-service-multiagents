@@ -8,6 +8,12 @@ class Package():
         self.streetAddress = None
         self.houseNumber = None
         
+    def __repr__(self):
+        return str(self.id)
+    
+    def __str__(self):
+        return str(self.id)
+        
 #Agregar que regrese paquetes entregados y paquetes activos
 class PackageAdmin():
     ZIP_CODES = ["27018", "44789", "89943"]

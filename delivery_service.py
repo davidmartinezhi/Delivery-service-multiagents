@@ -1,11 +1,23 @@
-from mesa import Model
+from mesa import Model, Agent
 from mesa.space import SingleGrid
 from mesa.time import SimultaneousActivation
 from itertools import permutations
 
-from map_code.map import Map
-from package_admin import PackageAdmin
+#Agents and classes
+from package_admin import Package, PackageAdmin
+from house import House
+from delivery_car import DeliveryCar
 from traffic_manager import TrafficManager
+
+#Map information
+import map_code.map_data
+import map_code.map_misc
+from map_code.map import Map
+
+import uuid
+from random import choice
+
+
         
 class DeliveryService(Model): 
     def __init__(self, street_positons, congested, house_positions, grid, graph, dispatch_coord, dispatch_street, car_capacity, num_cars = 1, optimized = True): 
@@ -13,27 +25,32 @@ class DeliveryService(Model):
         self.grid_width = len(grid)
         self.grid_height = len(grid[0])
         self.mesa_grid = SingleGrid(self.grid_width, self.grid_height, False)
-        self.sim_activation = SimultaneousActivation()
+        self.sim_activation = SimultaneousActivation(self)
         self.map = Map(graph)
         self.dispatch_coord = dispatch_coord
         self.dispatch_street = dispatch_street
 
-        self.traffic_manager = TrafficManager(self.map, street_positons, congested, 10, 40)
-        self.package_admin = PackageAdministrator()
+        #self.traffic_manager = TrafficManager(self.map, street_positons, congested, 10, 40)
+        self.package_admin = PackageAdmin()
 
         self.sim_data = {}
         self.step_count = 0 
 
         self.place_houses(house_positions)
 
-        self.deliveryCars = {car_id: DeliveryCar(car_capacities[i]) for car_id in range(num_cars)}
+        self.deliveryCars = {car_id: DeliveryCar(car_id, self, [], []) for car_id in range(num_cars)}
         for car in self.deliveryCars.values(): 
             self.sim_activation.add(car)
 
     def place_houses(self, house_positions): 
         for pos in house_positions: 
-            self.mesa_grid.place_agent(House(*house_positions[pos]), pos)
-            self.sim_activation.add()
+            #print(house_positions[pos])
+            houseInfo = list(house_positions[pos])
+            a = House(uuid.uuid4(), self, str(houseInfo[0]), str(houseInfo[1]), str(houseInfo[2]), houseInfo[3])
+            #print(a)
+            self.mesa_grid.place_agent(a, pos)
+            self.sim_activation.add(a)
+            self.package_admin.houses.append(a)
 
     def is_intersection(self, x, y): 
         return self.grid[x][y] == 0
@@ -64,7 +81,20 @@ class DeliveryService(Model):
         return self.orders.num_delivered()
             
     def step(self): 
-        self.traffic_manager.step()
+        #self.traffic_manager.step()
+        
+        #Crear paquete cada 10 frames
+        if(self.step_count % 10 == 0):
+            #Se crea orden en casa aleatoria
+            #create package
+            self.package_admin.createHouseOrder()
+            
+        #Crear delivery
+        toDeliver = self.package_admin.selectPackagesForDelivery()
+        print(toDeliver)
+        print("=======")
+        print(self.package_admin.packagesToDeliver)
+            
 
         for car in self.deliveryCars.values(): 
             if car.pos == None or (car.pos == self.dispatch_coord and car.loaded_packages == 0): 
@@ -76,10 +106,11 @@ class DeliveryService(Model):
                     
                     self.mesa_grid.place_agent(self.deliveryCars[car_id], self.dispatch_coord)
 
+        
         self.sim_data[self.step_count] = {
             'positions': self.car_coordinates(),
-            'streets': self.traffic_manager().get_traffic(), 
-            'packages': self.package_admin.active_packages()}
+            #'streets': self.traffic_manager().get_traffic(), 
+            'packages': self.package_admin.selectPackagesForDelivery()}
         self.step_count += 1
 
 # Delivery service 
@@ -92,3 +123,10 @@ class DeliveryService(Model):
     # - La posición actual de cada carro mensajero (diccionario)
     # - El estado de cada casa: el número de pedidos pendientes por casa. 
     # - La cantidad de trafico por calle. 
+    
+print("Salu2")
+
+test = DeliveryService(map_code.map_data.STREET_POSITIONS, ["Torreon"], map_code.map_data.HOUSE_POSITIONS, map_code.map_data.GRID, map_code.map_data.GRAPH, (0,11), "Ocaña", 5, 2, True)
+
+while(True):
+    test.step()

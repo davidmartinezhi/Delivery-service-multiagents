@@ -1,5 +1,5 @@
 from queue import Queue
-from edge import Edge
+from .edge import Edge
 from itertools import cycle, islice 
 
 def rel_dir(coord_a, coord_b): 
@@ -83,5 +83,14 @@ def place_block(positions_dic, block_number, corners, streets):
             line = ver_line(corners[i], corners[(i+1) % len(streets)])
 
         for pos in line: 
-            positions_dic[pos] = (block_number, streets[i], house_num)
+            zipNum = ""
+            
+            if(block_number == 1 or block_number == 2 or block_number == 4):
+                zipNum = "27018"
+            elif(block_number == 5 or block_number == 6 or block_number == 3):
+                zipNum = "44789"
+            elif(block_number == 7 or block_number == 8 or block_number == 9):
+                zipNum = "89943"
+            
+            positions_dic[pos] = (zipNum, str(block_number), streets[i], house_num)
             house_num += 1

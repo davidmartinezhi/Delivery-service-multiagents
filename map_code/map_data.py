@@ -1,4 +1,4 @@
-from map_misc import build_grid, build_graph, place_block
+from .map_misc import build_grid, build_graph, place_block
 
 y_inters = 4 
 x_inters = 4 

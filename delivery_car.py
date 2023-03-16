@@ -1,7 +1,7 @@
 from mesa import Agent
 
 class DeliveryCar(Agent): 
-    def __init__(self, unique_id, model, listaPedidos, listaIndicaciones, limite):
+    def __init__(self, unique_id, model, listaPedidos, listaIndicaciones, limite = 10):
         super().__init__(unique_id, model)
         self.pedidos = listaPedidos
         self.indicaciones = listaIndicaciones

@@ -1,7 +1,7 @@
 from queue import Queue
-from map_misc import rel_dir
-from map_sm import find_best_s_order
-from map_dijkstra import min_path_dijkstra
+from .map_misc import rel_dir
+from .map_sm import find_best_s_order
+from .map_dijkstra import min_path_dijkstra
 
 def path_to_directions(path): 
     directions = Queue()

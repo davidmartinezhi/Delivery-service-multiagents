@@ -23,12 +23,15 @@ class TrafficManager():
         if self.in_peak_traffic: 
             for street in self.congested_streets: 
                 traffic = randint(self.min_traffic, self.max_traffic)
-                map.mod_street(street, traffic)
+                self.map.mod_street(street, traffic)
                 self.affected_streets[street] = traffic 
 
-        for _ in self.max_num_jams: 
-            if self.jam_prob <= random(): 
-                self.affected_streets[choice(self.streets)] = self.max_traffic
+        for _ in range(self.max_num_jams): 
+            rand = random()
+            if self.jam_prob <= rand: 
+                #Que hace este código
+                randomStreet = choice(self.street_positions)
+                self.affected_streets[randomStreet] = self.max_traffic
 
     def get_traffic(self): 
         return self.affected_streets

@@ -1,5 +1,5 @@
 from random import random, sample
-from map_dijkstra import min_dis_dijkstra
+from .map_dijkstra import min_dis_dijkstra
 import math 
 
 def mod_s_order(s_order): 
