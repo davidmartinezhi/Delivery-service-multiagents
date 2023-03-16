@@ -29,9 +29,9 @@ def get_adj_intersecs(curr_intersec, y_inters, x_inters):
 
     return adj_intersecs
 
-def build_graph(y_inters, x_inters, blk_height, blk_width, street_names):
+def build_graph(y_inters, x_inters, blk_height, blk_width, street_vertices):
     required_streets = (y_inters - 1) * (x_inters - 1) * 4 + ((y_inters - 1) + (x_inters - 1)) * 2
-    if len(street_names) < required_streets: 
+    if len(street_vertices) < required_streets: 
         raise Exception()
 
     intersecs = Queue()
@@ -47,8 +47,8 @@ def build_graph(y_inters, x_inters, blk_height, blk_width, street_names):
 
         for adj in adj_intersecs: 
             w = blk_height/2 if rel_dir(curr_intersec, adj) == 'n' or rel_dir(curr_intersec, adj) == 's' else blk_width/2
-            graph[curr_intersec][street_names[(curr_intersec, adj)]] = Edge(w)
-            graph[street_names[(curr_intersec, adj)]] = {adj: Edge(w)}
+            graph[curr_intersec][street_vertices[(curr_intersec, adj)]] = Edge(w)
+            graph[street_vertices[(curr_intersec, adj)]] = {adj: Edge(w)}
 
         for adj in adj_intersecs: 
             if adj not in in_queue: 

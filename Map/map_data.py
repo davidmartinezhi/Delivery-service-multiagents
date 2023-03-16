@@ -4,7 +4,7 @@ y_inters = 4
 x_inters = 4 
 blk_length = 5  
 
-street_names = {
+STREET_VERTICES = { # 
     # Arriba -> abajo
     ((1, 3), (0, 3)): 'Torreon', ((2, 3), (1, 3)): 'Francisco', ((3, 3), (2, 3)): 'Jorge', 
     ((0, 3), (1, 3)): '1N', ((1, 3), (2, 3)): '2N', ((2, 3), (3, 3)): '3N', 
@@ -32,8 +32,37 @@ street_names = {
     ((3, 0), (3, 1)): 'Daniel', ((3, 1), (3, 2)): 'David', ((3, 2), (3, 3)): 'Bolivia', 
 }
 
-STREETS = list(street_names.values())
-GRAPH = build_graph(y_inters, x_inters, blk_length, blk_length, street_names)
+STREET_POSITIONS = {
+    # Arriba -> abajo 
+    'Torreon': (4, 22), 'Francisco': (11, 22), 'Jorge': (18, 22),
+    '1N': (4, 21), '2N': (11, 21), '3N': (18, 21), 
+
+    '1S': (4, 15), '2S': (11, 15), '3S': (18, 15),   
+    '4N': (4, 14), '5N': (11, 14), '6N': (18, 14), 
+
+    '4S': (4, 8), '5S': (11, 8), '6S': (18, 8), 
+    '7N': (4, 7), '8N': (11, 7), '9N': (18, 7), 
+
+    '7S': (4, 1), '8S': (11, 1), '9S': (18, 1), 
+    'Sam': (4, 0), 'Mayu': (11, 0), 'Esteban': (18, 0), 
+
+    # Izquierda -> derecha 
+    'Rodrigo': (0, 4), 'Ocaña': (0, 11), 'Roomba': (0, 18), 
+    '7W': (1, 4), '4W': (1, 11), '1W': (1, 18), 
+
+    '7E': (7, 4), '4E': (7, 11), '1E': (7, 18), 
+    '8W': (8, 4), '5W': (8, 11), '2W': (8, 18), 
+
+    '8E': (14, 4), '5E': (14, 11), '2E': (14, 18), 
+    '9W': (15, 4), '6W': (15, 11), '3W': (15, 18), 
+
+    '9E': (21, 4), '6E': (21, 11), '3E': (21, 18), 
+    'Daniel': (22, 4), 'David': (22, 11), 'Bolivia': (22, 18), 
+}
+
+STREET_NAMES = list(STREET_POSITIONS.keys())
+
+GRAPH = build_graph(y_inters, x_inters, blk_length, blk_length, STREET_VERTICES)
 GRID = build_grid(y_inters, x_inters, blk_length, blk_length) 
 HOUSE_POSITIONS = {}
 
