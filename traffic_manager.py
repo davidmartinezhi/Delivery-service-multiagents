@@ -38,8 +38,3 @@ class TrafficManager():
         if self.curr_step % self.phase_duration == 0:
             self.in_peak_traffic = not self.in_peak_traffic
             self.update_traffic()
-
-# server.py
-# simulation
-    # mesa
-    # map
