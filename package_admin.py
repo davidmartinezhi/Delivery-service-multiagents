@@ -166,26 +166,26 @@ class PackageAdmin():
                                 break
                         
                 #Look for packages in the same zipCode 
-                # for block, streets in self.ordersAdm[packageZipNum].items(): #O(1) checking 2 blocks always
+                for block, streets in self.ordersAdm[packageZipNum].items(): #O(1) checking 2 blocks always
                     
-                #     #skip block we have already checked
-                #     if(block != packageBlockNum):
+                    #skip block we have already checked
+                    if(block != packageBlockNum):
                         
-                #         #on each street
-                #         for street in streets: #O(1) checking 4 streets always
+                        #on each street
+                        for street in streets: #O(1) checking 4 streets always
                             
-                #             #look for packages
-                #             for p in self.ordersAdm[packageZipNum][block][street]: #O(n), number of packages 
+                            #look for packages
+                            for p in self.ordersAdm[packageZipNum][block][street]: #O(n), number of packages 
                             
-                #                 if(selectedPackagesNumber < limit and len(self.packagesToDeliver) > 0):
+                                if(selectedPackagesNumber < limit and len(self.packagesToDeliver) > 0):
         
-                #                     #add package
-                #                     selectedPackages.append(p) #add to packages to deliver
-                #                     selectedPackagesNumber += 1 #increment packages selected indicator
-                #                     #remove package from packages
-                #                     self.removePackage(p) #O(n)    
-                #                 else:
-                #                      break                       
+                                    #add package
+                                    selectedPackages.append(p) #add to packages to deliver
+                                    selectedPackagesNumber += 1 #increment packages selected indicator
+                                    #remove package from packages
+                                    self.removePackage(p) #O(n)    
+                                else:
+                                     break                       
 
                 # #Look for packages in the map
                 # #zipCode search ordering
