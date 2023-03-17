@@ -44,9 +44,8 @@ class DeliveryService(Model):
 
         self.carsDelivering = [] # car delivering
         self.carsAvailable = True
-        self.deliveryCars = {car_id: DeliveryCar(uuid.uuid4(), self, "s", 10) for car_id in range(num_cars)}
-        for car in self.deliveryCars.values(): 
-            self.sim_activation.add(car)
+        self.deliveryCars = {}
+
 
     def place_houses(self, house_positions): 
         for pos in house_positions: 
@@ -117,30 +116,24 @@ class DeliveryService(Model):
             
             #Paquetes y auto
             toDeliver = self.package_admin.selectPackagesForDelivery() #conseguimos paquetes para entregar
-            deliveryCar = None #conseguimos auto para entregar
             
-            #conseguimos un carro disponible
-            for car in self.deliveryCars.values():
-                
-                if(car.delivering == False):
-                    deliveryCar = car #asignamos carro
-                    car.delivering = True #está entregando un paquete
-                    self.carsDelivering.append(car) #se le agrega a la lista de carros haciendo delivery
-                    break
-                
-            #Le asignamos los paquetes
-            deliveryCar.packages = toDeliver
+            deliveryCar = DeliveryCar(str(uuid.uuid4()),self, 's', 10, self.dispatch_coord) #creamos el auto
             
+            
+            #Lo agrego a delivery cars
+            self.deliveryCars[deliveryCar.unique_id] = deliveryCar
+            deliveryCar.delivering = True #está entregando un paquete
+            self.carsDelivering.append(deliveryCar) #se le agrega a la lista de carros haciendo delivery
+            
+                
             #Asignar ruta
             
             #conseguimos calles
             streetsToDeliver = [package.streetAddress for package in toDeliver]
             
-            #Asignamos la ruta
+            #Asignamos la ruta y paquetes
             deliveryCar.set_tour(toDeliver, self.map.get_directions_SM(self.dispatch_street, streetsToDeliver))
-
-            #Mandamos carro a entregar
-            self.mesa_grid.place_agent(deliveryCar, self.dispatch_coord)
+            
                   
 
         # for car in self.deliveryCars.values(): 

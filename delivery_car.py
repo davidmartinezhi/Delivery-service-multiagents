@@ -6,13 +6,16 @@ from house import House
 def forward_pos(pos, direction):
     x_mod = 1 if direction == 'e' else -1 if direction == 'w' else 0
     y_mod = 1 if direction == 'n' else -1 if direction == 's' else 0
-
-    return pos[0] + x_mod, pos[1] + y_mod
+    
+    newX = pos[0] + x_mod
+    newY = pos[1] + y_mod
+    return (newX, newY)
 
 def right_pos(pos, direction):
     x_mod = 1 if direction == 'n' else -1 if direction == 's' else 0
     y_mod = -1 if direction == 'e' else 1 if direction == 'w' else 0
-
+    print("Pos:",pos)
+    
     return pos[0] + x_mod, pos[1] + y_mod
 
 def left_pos(pos, direction):
@@ -32,40 +35,91 @@ def left_diag_pos(pos, direction):
     return pos[0] + x_mod, pos[1] + y_mod
 
 class DeliveryCar(Agent): 
-    def __init__(self, unique_id, model,  init_direction, capacity):
+    def __init__(self, unique_id, model, init_direction, capacity, pos):
         super().__init__(unique_id, model)
         self.model = model
         self.curr_direction = init_direction
         self.capacity = capacity
         self.queued_moves = Queue()
-        #self.delivery_service = delivery_service
 
         self.delivering = False
         self.queued_directions = None
         self.packages = []
         self.prev_house = None
         self.num_delivered = 0
+        
+        self.pos = pos
+        self.model.mesa_grid.place_agent(self, pos)
+        self.model.sim_activation.add(self)
 
     def turn_type(self, next_direction): 
-        cardinal_dirs = {'n': 0, 'e': 1, 's': 2, 'w': 3}
 
-        if next_direction == self.curr_direction: 
-            return 'straight' 
-        elif cardinal_dirs[next_direction] - cardinal_dirs[self.curr_direction] == 1: 
-            return 'right'
-        elif cardinal_dirs[next_direction] - cardinal_dirs[self.curr_direction] == -1: 
-            return 'left'
-        else: 
-            return 'u-turn'
+        #moving north
+        if(self.curr_direction == "n"):
+            
+            if(next_direction == "e"):
+                return "right"
+                
+            elif(next_direction == "w"):
+                return "left"
+                
+            elif(next_direction == "n"):
+                return "straight"
+                
+            elif(next_direction == "s"):
+                return "u-turn"
+                
+        #moving east
+        elif(self.curr_direction == "e"):
+            if(next_direction == "s"):
+                return "right"
+                
+            elif(next_direction == "n"):
+                return "left"
+                
+            elif(next_direction == "e"):
+                return "straight"
+                
+            elif(next_direction == "w"):
+                return "u-turn"
+                      
+        #moving west  
+        elif(self.curr_direction == "w"):
+            if(next_direction == "n"):
+                return "right"
+                
+            elif(next_direction == "s"):
+                return "left"
+                
+            elif(next_direction == "w"):
+                return "straight"
+                
+            elif(next_direction == "e"):
+                return "u-turn"
+                        
+        #moving south
+        elif(self.curr_direction == "s"):
+            
+            if(next_direction == "w"):
+                return "right"
+                
+            elif(next_direction == "e"):
+                return "left"
+                
+            elif(next_direction == "s"):
+                return "straight"
+                
+            elif(next_direction == "n"):
+                return "u-turn"
     
     def queue_forward_move(self):
         self.queued_moves.put(forward_pos(self.pos, self.curr_direction))
 
     def queue_turn_moves(self):
         positions = []
-        positions.appeend(forward_pos(self.pos, self.curr_direction))
+        positions.append(forward_pos(self.pos, self.curr_direction))
         next_direction = self.queued_directions.get()
-        turn_t = self.turn_type()
+        turn_t = self.turn_type(next_direction)
 
         if turn_t == 'straight': 
             positions.append(forward_pos(positions[-1], self.curr_direction))
@@ -90,28 +144,39 @@ class DeliveryCar(Agent):
     
     def step(self):
         
-        if not self.queued_moves.empty(): 
+        #Al inicio no tiene queued moves
+        if self.queued_moves.empty(): 
+            
+            #sacamos siguiente paso a tomar
+            print(self.curr_direction)
             x_f, y_f = forward_pos(self.pos, self.curr_direction)
-            if self.delivery_service.is_intersection(x_f, y_f): 
+            
+            #Checamos si ese paso es dentro de la intersección
+            if self.model.grid[x_f][y_f] == 0: # is intersection
                 self.queue_turn_moves()
+                
+            #Si no esta en una intersección no se mueve
             else: 
+
                 self.queue_forward_move()
                 
         else:
-            self.delivering = False
+            print("No queued moves")
+                
     
     def advance(self):
-        
+
         x_r, y_r = right_pos(self.pos, self.curr_direction)
-        #print(self.model.grid_height)
-        if (0 < x_r < self.model.grid_with and 0 < y_r < self.model.grid_height): 
-            
+        
+        if (0 < x_r < self.model.grid_width and 0 < y_r < self.model.grid_height): 
+
             adj_house = self.model.grid[x_r][y_r]
             if isinstance(adj_house, House) and adj_house != self.prev_house: 
                 packages_new = []
                 for package in self.packages:
                     if package.houseNumber == adj_house.houseNumber and package.streetAddress == adj_house.streetAddress:
                         self.num_delivered += 1 
+                       #adj_house.ordersDelivered[package.id] = True
                     else:
                         packages_new.append(package)
 
@@ -119,15 +184,15 @@ class DeliveryCar(Agent):
                 self.prev_house = adj_house
                 return 
             
-        if self.model.intersection_occupied(self.pos[0], self.pos[1]): 
-            return 
+        # if self.model.intersection_occupied(self.pos[0], self.pos[1]): 
+        #     return 
         
         x_f, y_f = forward_pos(self.pos, self.curr_direction)
-        if self.model.grid[x_f][y_f] != None: 
+        if self.model.grid[x_f][y_f] == isinstance(self.model.grid[x_f][y_f],DeliveryCar) or self.model.grid[x_f][y_f] == isinstance(self.model.grid[x_f][y_f],House): 
             return 
 
         next_move = self.queued_moves.get()
-        self.model.grid.move_agent(self, next_move)
+        self.model.mesa_grid.move_agent(self, next_move)
 
 
         # Step: 
