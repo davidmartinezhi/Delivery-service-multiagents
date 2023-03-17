@@ -3,10 +3,10 @@ from random import choice
 class Package():
     def __init__(self, id, zipNumber, blockNumber, streetAddress, houseNumber):
         self.id = id
-        self.zipNumber = None
-        self.blockNumber = None
-        self.streetAddress = None
-        self.houseNumber = None
+        self.zipNumber = zipNumber
+        self.blockNumber = blockNumber
+        self.streetAddress = streetAddress
+        self.houseNumber = houseNumber
         
     def __repr__(self):
         return str(self.id)
@@ -101,18 +101,19 @@ class PackageAdmin():
            
     def selectPackagesForDelivery(self, limit = 10):
         
-        selectedPackagesNumber = 0
+        selectedPackagesNumber = 1
         selectedPackages = []
         
         #traverse
         #travers packages to deliver
         
         #look for packages until we fill the delivery vehicle or we run out of packages
-        while(selectedPackagesNumber < limit and len(self.packagesToDeliver) > 0):
+        if(selectedPackagesNumber < limit and len(self.packagesToDeliver) > 0):
             
             #traverse packages to deliver FIFO
-            for i in range(0,len(self.packagesToDeliver),-1): #O(n), total packages
+            for i in range(len(self.packagesToDeliver)-1,-1,-1): #O(n), total packages
                 
+                if(i > len(self.packagesToDeliver)-1): continue
                 #select package
                 package = self.packagesToDeliver[i]
                 
@@ -124,7 +125,8 @@ class PackageAdmin():
                 #add package to selscted packages for current delivery
                 selectedPackages.append(package) #add to packages to deliver
                 selectedPackagesNumber += 1 #increment packages selected indicator
-                
+                print("Packages in street:", self.ordersAdm[packageZipNum][packageBlockNum][packageStreetAddress])
+
                 #remove package from packages
                 self.removePackage(package)
                 
@@ -164,26 +166,26 @@ class PackageAdmin():
                                 break
                         
                 #Look for packages in the same zipCode 
-                for block, streets in self.ordersAdm[packageZipNum].items(): #O(1) checking 2 blocks always
+                # for block, streets in self.ordersAdm[packageZipNum].items(): #O(1) checking 2 blocks always
                     
-                    #skip block we have already checked
-                    if(block != packageBlockNum):
+                #     #skip block we have already checked
+                #     if(block != packageBlockNum):
                         
-                        #on each street
-                        for street in streets: #O(1) checking 4 streets always
+                #         #on each street
+                #         for street in streets: #O(1) checking 4 streets always
                             
-                            #look for packages
-                            for p in street: #O(n), number of packages 
+                #             #look for packages
+                #             for p in self.ordersAdm[packageZipNum][block][street]: #O(n), number of packages 
                             
-                                if(selectedPackagesNumber < limit and len(self.packagesToDeliver) > 0):
+                #                 if(selectedPackagesNumber < limit and len(self.packagesToDeliver) > 0):
         
-                                    #add package
-                                    selectedPackages.append(p) #add to packages to deliver
-                                    selectedPackagesNumber += 1 #increment packages selected indicator
-                                    #remove package from packages
-                                    self.removePackage(p) #O(n)    
-                                else:
-                                    break                       
+                #                     #add package
+                #                     selectedPackages.append(p) #add to packages to deliver
+                #                     selectedPackagesNumber += 1 #increment packages selected indicator
+                #                     #remove package from packages
+                #                     self.removePackage(p) #O(n)    
+                #                 else:
+                #                      break                       
 
                 # #Look for packages in the map
                 # #zipCode search ordering
@@ -216,10 +218,12 @@ class PackageAdmin():
     def removePackage(self, package):
         
         #remove from list of packages to be delivered
-        self.packagesToDeliver.pop(package) #O(n) total packages
+        packageIdx = self.packagesToDeliver.index(package)
+        self.packagesToDeliver.pop(packageIdx) #O(n) total packages
         
         #remove from orders administration
-        self.ordersAdm[package.zipNumber][package.blockNumber][package.streetAddress].pop(package) #O(n)
+        ordersAdminPackageIdx = self.ordersAdm[package.zipNumber][package.blockNumber][package.streetAddress].index(package)
+        self.ordersAdm[package.zipNumber][package.blockNumber][package.streetAddress].pop(ordersAdminPackageIdx) #O(n)
         
     def createHouseOrder(self):
         
@@ -230,5 +234,6 @@ class PackageAdmin():
         order = house.create_order()
         
         #add order
-        self.packagesToDeliver.insert(0, order) #packagesToDeliver, O(n)
         self.ordersAdm[house.zipNumber][house.blockNumber][house.streetAddress].append(order)
+        self.packagesToDeliver.insert(0, order) #packagesToDeliver, O(n)
+        

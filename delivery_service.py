@@ -84,16 +84,24 @@ class DeliveryService(Model):
         #self.traffic_manager.step()
         
         #Crear paquete cada 10 frames
-        if(self.step_count % 10 == 0):
+        #if(self.step_count % 2 == 0):
             #Se crea orden en casa aleatoria
             #create package
-            self.package_admin.createHouseOrder()
+        self.package_admin.createHouseOrder()
+        # print(self.package_admin.ordersAdm)
+        # print("==")
+        # print(self.package_admin.packagesToDeliver)
+        # print("=======")
             
         #Crear delivery
-        toDeliver = self.package_admin.selectPackagesForDelivery()
-        print(toDeliver)
-        print("=======")
-        print(self.package_admin.packagesToDeliver)
+        if(self.step_count % 10 == 0):
+            print(self.package_admin.ordersAdm)
+            toDeliver = self.package_admin.selectPackagesForDelivery()
+            print("===")
+            print("To Deliver: ",toDeliver)
+            print("=======")
+            print(self.package_admin.ordersAdm)
+            pass
             
 
         for car in self.deliveryCars.values(): 
@@ -110,7 +118,8 @@ class DeliveryService(Model):
         self.sim_data[self.step_count] = {
             'positions': self.car_coordinates(),
             #'streets': self.traffic_manager().get_traffic(), 
-            'packages': self.package_admin.selectPackagesForDelivery()}
+            #'packages': self.package_admin.selectPackagesForDelivery()
+            }
         self.step_count += 1
 
 # Delivery service 
@@ -128,5 +137,7 @@ print("Salu2")
 
 test = DeliveryService(map_code.map_data.STREET_POSITIONS, ["Torreon"], map_code.map_data.HOUSE_POSITIONS, map_code.map_data.GRID, map_code.map_data.GRAPH, (0,11), "Ocaña", 5, 2, True)
 
-while(True):
+i = 0
+while(i < 11):
+    i += 1
     test.step()
