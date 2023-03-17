@@ -1,7 +1,8 @@
 from mesa import Model, Agent
 from mesa.space import SingleGrid
 from mesa.time import SimultaneousActivation
-from itertools import permutations
+from mesa.datacollection import DataCollector
+import numpy as np
 
 #Agents and classes
 from package_admin import Package, PackageAdmin
@@ -29,6 +30,9 @@ class DeliveryService(Model):
         self.map = Map(graph)
         self.dispatch_coord = dispatch_coord
         self.dispatch_street = dispatch_street
+        self.datacollector = DataCollector(
+            model_reporters={"Grid": self.get_grid}
+        )
 
         #self.traffic_manager = TrafficManager(self.map, street_positons, congested, 10, 40)
         self.package_admin = PackageAdmin()
@@ -38,7 +42,9 @@ class DeliveryService(Model):
 
         self.place_houses(house_positions)
 
-        self.deliveryCars = {car_id: DeliveryCar(car_id, self, [], []) for car_id in range(num_cars)}
+        self.carsDelivering = [] # car delivering
+        self.carsAvailable = True
+        self.deliveryCars = {car_id: DeliveryCar(uuid.uuid4(), self, "s", 10) for car_id in range(num_cars)}
         for car in self.deliveryCars.values(): 
             self.sim_activation.add(car)
 
@@ -51,14 +57,20 @@ class DeliveryService(Model):
             self.mesa_grid.place_agent(a, pos)
             self.sim_activation.add(a)
             self.package_admin.houses.append(a)
+            
+    def get_grid(self):
+        # Generamos la grid para contener los valores
+        grid = np.zeros((self.grid_width, self.grid_height))
 
+        return grid
+    
     def is_intersection(self, x, y): 
         return self.grid[x][y] == 0
     
     def intersection_occupied(self, x, y): 
         analysis_radius = 1
-
-        for x_mod, y_mod in permutations(range(analysis_radius * -1, analysis_radius + 1)):
+        neighbours_radius_coordinates  = [[-1, -1], [-1, 0], [-1, 1],[0,-1],[0,0],[0,1],[1,-1],[1,0],[1,1]]
+        for x_mod, y_mod in neighbours_radius_coordinates:
             if 0 < x + x_mod < self.grid_width and 0 < y + y_mod < self.grid_height: 
                 if isinstance(self.mesa_grid[x + x_mod][y + y_mod], DeliveryCar) and self.grid[x + x_mod][y + y_mod] == 0: 
                     return True 
@@ -72,16 +84,23 @@ class DeliveryService(Model):
 
     def car_coordinates(self): 
         coordinates = {}
-        for car_id in self.deliveryCars:
-            coordinates[car_id] = self.deliveryCars[car_id].pos
+        for car in self.carsDelivering:
+            coordinates[car.unique_id] = self.deliveryCars[car.unique_id]
+        # for car_id in self.deliveryCars:
+        #     coordinates[car_id] = self.deliveryCars[car_id].pos
 
         return coordinates
     
     def num_delivered(self): 
         return self.orders.num_delivered()
+    
+    def in_bounds(self, x, y): 
+        return 0 < x < self.grid_width and 0 < y < self.grid_height
             
     def step(self): 
         #self.traffic_manager.step()
+        self.datacollector.collect(self)
+        
         
         #Crear paquete cada 10 frames
         #if(self.step_count % 2 == 0):
@@ -93,28 +112,49 @@ class DeliveryService(Model):
         # print(self.package_admin.packagesToDeliver)
         # print("=======")
             
-        #Crear delivery
-        if(self.step_count % 10 == 0):
-            print(self.package_admin.ordersAdm)
-            toDeliver = self.package_admin.selectPackagesForDelivery()
-            print("===")
-            print("To Deliver: ",toDeliver)
-            print("=======")
-            print(self.package_admin.ordersAdm)
-            pass
+        #Crear delivery, aquí pasamos los paquetes a los carros
+        if(self.step_count % 30 == 0):
             
+            #Paquetes y auto
+            toDeliver = self.package_admin.selectPackagesForDelivery() #conseguimos paquetes para entregar
+            deliveryCar = None #conseguimos auto para entregar
+            
+            #conseguimos un carro disponible
+            for car in self.deliveryCars.values():
+                
+                if(car.delivering == False):
+                    deliveryCar = car #asignamos carro
+                    car.delivering = True #está entregando un paquete
+                    self.carsDelivering.append(car) #se le agrega a la lista de carros haciendo delivery
+                    break
+                
+            #Le asignamos los paquetes
+            deliveryCar.packages = toDeliver
+            
+            #Asignar ruta
+            
+            #conseguimos calles
+            streetsToDeliver = [package.streetAddress for package in toDeliver]
+            
+            #Asignamos la ruta
+            deliveryCar.set_tour(toDeliver, self.map.get_directions_SM(self.dispatch_street, streetsToDeliver))
 
-        for car in self.deliveryCars.values(): 
-            if car.pos == None or (car.pos == self.dispatch_coord and car.loaded_packages == 0): 
-                if self.package_admin.get_num_orders() > 0: 
-                    to_deliver = self.orders.get_orders(self.deliveryCars[car_id].capacity)
-                    to_deliver_streets = [package.street for package in to_deliver]
+            #Mandamos carro a entregar
+            self.mesa_grid.place_agent(deliveryCar, self.dispatch_coord)
+                  
 
-                    self.deliveryCars[car_id].set_tour(to_deliver, self.map.get_directions(self.dispatch_street, to_deliver_streets))
+        # for car in self.deliveryCars.values(): 
+        #     if car.pos == None or (car.pos == self.dispatch_coord and car.loaded_packages == 0): 
+        #         if self.package_admin.packagesLimit > 0: 
+        #             to_deliver = self.orders.get_orders(self.deliveryCars[car_id].capacity)
+        #             to_deliver_streets = [package.street for package in to_deliver]
+
+        #             self.deliveryCars[car_id].set_tour(to_deliver, self.map.get_directions(self.dispatch_street, to_deliver_streets))
                     
-                    self.mesa_grid.place_agent(self.deliveryCars[car_id], self.dispatch_coord)
+        #             self.mesa_grid.place_agent(self.deliveryCars[car_id], self.dispatch_coord)
 
-        
+            
+        self.sim_activation.step()
         self.sim_data[self.step_count] = {
             'positions': self.car_coordinates(),
             #'streets': self.traffic_manager().get_traffic(), 
@@ -135,9 +175,9 @@ class DeliveryService(Model):
     
 print("Salu2")
 
-test = DeliveryService(map_code.map_data.STREET_POSITIONS, ["Torreon"], map_code.map_data.HOUSE_POSITIONS, map_code.map_data.GRID, map_code.map_data.GRAPH, (0,11), "Ocaña", 5, 2, True)
+test = DeliveryService(map_code.map_data.STREET_POSITIONS, ["Torreon"], map_code.map_data.HOUSE_POSITIONS, map_code.map_data.GRID, map_code.map_data.GRAPH, (0,11), "Ocaña", 5, 3, True)
 
 i = 0
-while(i < 11):
+while(i < 31):
     i += 1
     test.step()

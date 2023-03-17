@@ -125,7 +125,7 @@ class PackageAdmin():
                 #add package to selscted packages for current delivery
                 selectedPackages.append(package) #add to packages to deliver
                 selectedPackagesNumber += 1 #increment packages selected indicator
-                print("Packages in street:", self.ordersAdm[packageZipNum][packageBlockNum][packageStreetAddress])
+                #print("Packages in street:", self.ordersAdm[packageZipNum][packageBlockNum][packageStreetAddress])
 
                 #remove package from packages
                 self.removePackage(package)
