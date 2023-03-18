@@ -110,29 +110,48 @@ class DeliveryService(Model):
         # print("==")
         # print(self.package_admin.packagesToDeliver)
         # print("=======")
+
+        # Crear delivery cada 30 pasos
+        if self.step_count % 30 == 0:
+            # Verificar que la celda esté vacía
+            x, y = self.dispatch_coord
             
-        #Crear delivery, aquí pasamos los paquetes a los carros
-        if(self.step_count % 30 == 0):
+            if self.mesa_grid.is_cell_empty(self.dispatch_coord):
+                # Crear el delivery
+                toDeliver = self.package_admin.selectPackagesForDelivery() #conseguimos paquetes para entregar
+                deliveryCar = DeliveryCar(str(uuid.uuid4()), self, 's', 10, self.dispatch_coord)
+                self.deliveryCars[deliveryCar.unique_id] = deliveryCar
+                deliveryCar.delivering = True #está entregando un paquete
+                self.sim_activation.add(deliveryCar)
+                
+                #Asignar ruta
+                streetsToDeliver = [package.streetAddress for package in toDeliver]
+                deliveryCar.set_tour(toDeliver, self.map.get_directions_SM(self.dispatch_street, streetsToDeliver))
+
+            else:
+                print('No se puede crear delivery: celda ocupada')            
+        # #Crear delivery, aquí pasamos los paquetes a los carros
+        # if(self.step_count % 30 == 0):
             
-            #Paquetes y auto
-            toDeliver = self.package_admin.selectPackagesForDelivery() #conseguimos paquetes para entregar
+        #     #Paquetes y auto
+        #     toDeliver = self.package_admin.selectPackagesForDelivery() #conseguimos paquetes para entregar
+        #     print("Instanciando")
+        #     deliveryCar = DeliveryCar(str(uuid.uuid4()),self, 's', 10, self.dispatch_coord) #creamos el auto
             
-            deliveryCar = DeliveryCar(str(uuid.uuid4()),self, 's', 10, self.dispatch_coord) #creamos el auto
             
-            
-            #Lo agrego a delivery cars
-            self.deliveryCars[deliveryCar.unique_id] = deliveryCar
-            deliveryCar.delivering = True #está entregando un paquete
-            self.carsDelivering.append(deliveryCar) #se le agrega a la lista de carros haciendo delivery
+        #     #Lo agrego a delivery cars
+        #     self.deliveryCars[deliveryCar.unique_id] = deliveryCar
+        #     deliveryCar.delivering = True #está entregando un paquete
+        #     self.carsDelivering.append(deliveryCar) #se le agrega a la lista de carros haciendo delivery
             
                 
-            #Asignar ruta
+        #     #Asignar ruta
             
-            #conseguimos calles
-            streetsToDeliver = [package.streetAddress for package in toDeliver]
+        #     #conseguimos calles
+        #     streetsToDeliver = [package.streetAddress for package in toDeliver]
             
-            #Asignamos la ruta y paquetes
-            deliveryCar.set_tour(toDeliver, self.map.get_directions_SM(self.dispatch_street, streetsToDeliver))
+        #     #Asignamos la ruta y paquetes
+        #     deliveryCar.set_tour(toDeliver, self.map.get_directions_SM(self.dispatch_street, streetsToDeliver))
             
                   
 
@@ -171,6 +190,6 @@ print("Salu2")
 test = DeliveryService(map_code.map_data.STREET_POSITIONS, ["Torreon"], map_code.map_data.HOUSE_POSITIONS, map_code.map_data.GRID, map_code.map_data.GRAPH, (0,11), "Ocaña", 5, 3, True)
 
 i = 0
-while(i < 31):
+while(i < 29):
     i += 1
     test.step()

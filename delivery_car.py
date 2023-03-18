@@ -14,7 +14,6 @@ def forward_pos(pos, direction):
 def right_pos(pos, direction):
     x_mod = 1 if direction == 'n' else -1 if direction == 's' else 0
     y_mod = -1 if direction == 'e' else 1 if direction == 'w' else 0
-    print("Pos:",pos)
     
     return pos[0] + x_mod, pos[1] + y_mod
 
@@ -50,7 +49,6 @@ class DeliveryCar(Agent):
         
         self.pos = pos
         self.model.mesa_grid.place_agent(self, pos)
-        self.model.sim_activation.add(self)
 
     def turn_type(self, next_direction): 
 
@@ -159,9 +157,7 @@ class DeliveryCar(Agent):
             else: 
 
                 self.queue_forward_move()
-                
-        else:
-            print("No queued moves")
+            
                 
     
     def advance(self):
@@ -188,10 +184,12 @@ class DeliveryCar(Agent):
         #     return 
         
         x_f, y_f = forward_pos(self.pos, self.curr_direction)
+        
         if self.model.grid[x_f][y_f] == isinstance(self.model.grid[x_f][y_f],DeliveryCar) or self.model.grid[x_f][y_f] == isinstance(self.model.grid[x_f][y_f],House): 
             return 
 
         next_move = self.queued_moves.get()
+        print(self.pos)
         self.model.mesa_grid.move_agent(self, next_move)
 
 
