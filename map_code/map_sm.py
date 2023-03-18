@@ -37,7 +37,7 @@ def find_best_s_order(graph, init_s_order, init_temp = 1 * 10**100, end_temp = 0
                 best_s_order = new_s_order if new_s_order['dis'] < best_s_order['dis'] else best_s_order
             
             temp *= cool_factor
-            num_iter += 1
+            #num_iter += 1
         
         temp = init_temp
         curr_s_order = best_s_order
