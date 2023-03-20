@@ -32,7 +32,7 @@ class DeliveryCar(Agent):
         self.delivering = False
         self.queued_directions = Queue()
         self.packages = {}
-        self.prev_house = None
+        self.active = False 
 
     def turn_type(self, next_direction): 
         # Moving north
@@ -80,12 +80,10 @@ class DeliveryCar(Agent):
         self.queued_directions = queued_directions
     
     def step(self):
-        if not self.queued_directions.empty() and self.queued_moves.empty(): 
+        if self.active and self.queued_moves.empty(): 
             x_r, y_r = right_pos(self.pos, self.curr_direction)
-            if self.model.in_bounds(x_r, y_r):
-                adj_house = self.model.mesa_grid[x_r][y_r]
-            else:
-                adj_house = None
+
+            adj_house = self.model.mesa_grid[x_r][y_r] if self.model.in_bounds(x_r, y_r) else None 
                 
             if isinstance(adj_house, House):
                 for package_id in self.packages: 

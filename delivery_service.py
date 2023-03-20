@@ -91,12 +91,15 @@ class DeliveryService(Model):
             self.package_admin.createHousePackages(num_packages)
 
         for car in self.deliveryCars.values(): 
-            if car.pos == None and self.mesa_grid[self.dispatch_coord[0]][self.dispatch_coord[1]] == None: 
+            dc_x, dc_y = self.dispatch_coord
+            if car.pos == None and self.mesa_grid[dc_x][dc_y] == None and self.package_admin.numPackagesToDeliver() > 0: 
                 self.mesa_grid.place_agent(car, self.dispatch_coord)
                 self.sim_activation.add(car)
                 car.curr_direction = self.dispatch_direction
+                car.active = False 
 
             if len(car.packages) == 0 and car.pos == self.dispatch_coord:
+                car.active = False 
                 if self.package_admin.numPackagesToDeliver() > 0:
                     packages = self.package_admin.selectPackagesForDelivery(car.capacity) 
                     if self.optimized: 
@@ -104,6 +107,7 @@ class DeliveryService(Model):
                     else: 
                         directions = self.map.get_directions_naive(self.dispatch_street, [p.streetAddress for p in packages.values()])
                     car.set_tour(packages, directions)
+                    car.active = True 
         
         self.sim_data['steps'].append(self.build_step_data())
         self.sim_activation.step()

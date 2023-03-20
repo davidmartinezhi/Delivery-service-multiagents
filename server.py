@@ -19,16 +19,12 @@ def run_simulation(num_steps, num_cars, car_capacity, optimized):
     while delivery_service.get_num_steps() < int(num_steps): 
         delivery_service.step()
 
-    print(delivery_service.get_sim_data())
     return delivery_service.get_sim_data()
 
 # ds = DeliveryService(STREET_NAMES, ['Ocaña', 'Daniel'], HOUSE_DATA, GRID, GRAPH, (5, 10), 5, 3, True)
 
-# counter = 0 
 # while ds.get_num_steps() < 300: 
 #     ds.step()
-#     print(counter)
-#     counter += 1
 
 # sim_data = ds.get_sim_data()
 # positions = [step['positions'] for step in sim_data['steps']]
