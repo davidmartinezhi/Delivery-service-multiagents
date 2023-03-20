@@ -71,7 +71,7 @@ def my_range(inf, sup): # Ambos exclusivos
         return range(inf - 1, sup, -1)
     return None
 
-def place_block(positions_dic, block_number, corners, streets): 
+def place_block(house_data, block_number, corners, streets): 
     hor_line = lambda coord_a, coord_b: [(x, coord_a[1]) for x in my_range(coord_a[0], coord_b[0])]
     ver_line = lambda coord_a, coord_b: [(coord_a[0], y) for y in my_range(coord_a[1], coord_b[1])]
     house_num = 1
@@ -82,9 +82,7 @@ def place_block(positions_dic, block_number, corners, streets):
         else: 
             line = ver_line(corners[i], corners[(i+1) % len(streets)])
 
-        for pos in line: 
-            zipNum = ""
-            
+        for pos in line:             
             if(block_number == 1 or block_number == 2 or block_number == 4):
                 zipNum = "27018"
             elif(block_number == 5 or block_number == 6 or block_number == 3):
@@ -92,5 +90,5 @@ def place_block(positions_dic, block_number, corners, streets):
             elif(block_number == 7 or block_number == 8 or block_number == 9):
                 zipNum = "89943"
             
-            positions_dic[pos] = (zipNum, str(block_number), streets[i], house_num)
+            house_data[pos] = (zipNum, str(block_number), streets[i], house_num)
             house_num += 1

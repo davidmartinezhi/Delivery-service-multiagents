@@ -1,9 +1,9 @@
 from random import random, randint, choice 
 
 class TrafficManager(): 
-    def __init__(self, map, street_positions, congested, min_traffic, max_traffic, max_num_jams = 5, jam_prob = 0.1, phase_duration = 100): 
+    def __init__(self, map, streets, congested, min_traffic, max_traffic, max_num_jams = 5, jam_prob = 0.1, phase_duration = 100): 
         self.map = map
-        self.street_positions = street_positions
+        self.streets = streets
         self.congested_streets = congested
         self.min_traffic = min_traffic
         self.max_traffic = max_traffic
@@ -16,9 +16,9 @@ class TrafficManager():
         self.affected_streets = {}
         
     def update_traffic(self): 
-        for street in self.affected_streets.keys(): 
+        for street in self.affected_streets: 
             self.map.restore_street(street)
-            self.affected_streets[street].pop()
+        self.affected_streets.clear()
 
         if self.in_peak_traffic: 
             for street in self.congested_streets: 
@@ -29,8 +29,7 @@ class TrafficManager():
         for _ in range(self.max_num_jams): 
             rand = random()
             if self.jam_prob <= rand: 
-                #Que hace este código
-                randomStreet = choice(self.street_positions)
+                randomStreet = choice(self.streets)
                 self.affected_streets[randomStreet] = self.max_traffic
 
     def get_traffic(self): 

@@ -64,16 +64,16 @@ STREET_NAMES = list(STREET_POSITIONS.keys())
 
 GRAPH = build_graph(y_inters, x_inters, blk_length, blk_length, STREET_VERTICES)
 GRID = build_grid(y_inters, x_inters, blk_length, blk_length) 
-HOUSE_POSITIONS = {}
+HOUSE_DATA = {}
 
-place_block(HOUSE_POSITIONS, 1, [(2, 20), (6, 20), (6, 16), (2, 16)], ['1N', '1E', '1S', '1W'])
-place_block(HOUSE_POSITIONS, 2, [(9, 20), (13, 20), (13, 16), (9, 16)], ['2N', '2E', '2S', '2W'])
-place_block(HOUSE_POSITIONS, 3, [(16, 20), (20, 20), (20, 16), (16, 16)], ['3N', '3E', '3S', '3W'])
+place_block(HOUSE_DATA, 1, [(2, 20), (6, 20), (6, 16), (2, 16)], ['1N', '1E', '1S', '1W'])
+place_block(HOUSE_DATA, 2, [(9, 20), (13, 20), (13, 16), (9, 16)], ['2N', '2E', '2S', '2W'])
+place_block(HOUSE_DATA, 3, [(16, 20), (20, 20), (20, 16), (16, 16)], ['3N', '3E', '3S', '3W'])
 
-place_block(HOUSE_POSITIONS, 4, [(2, 13), (6, 13), (6, 9), (2, 9)], ['4N', '4E', '4S', '4W'])
-place_block(HOUSE_POSITIONS, 5, [(9, 13), (13, 13), (13, 9), (9, 9)], ['5N', '5E', '5S', '5W'])
-place_block(HOUSE_POSITIONS, 6, [(16, 13), (20, 13), (20, 9), (16, 9)], ['6N', '6E', '6S', '6W'])
+place_block(HOUSE_DATA, 4, [(2, 13), (6, 13), (6, 9), (2, 9)], ['4N', '4E', '4S', '4W'])
+place_block(HOUSE_DATA, 5, [(9, 13), (13, 13), (13, 9), (9, 9)], ['5N', '5E', '5S', '5W'])
+place_block(HOUSE_DATA, 6, [(16, 13), (20, 13), (20, 9), (16, 9)], ['6N', '6E', '6S', '6W'])
 
-place_block(HOUSE_POSITIONS, 7, [(2, 6), (6, 6), (6, 2), (2, 2)], ['7N', '7E', '7S', '7W'])
-place_block(HOUSE_POSITIONS, 8, [(9, 6), (13, 6), (13, 2), (9, 2)], ['8N', '8E', '8S', '8W'])
-place_block(HOUSE_POSITIONS, 9, [(16, 6), (20, 6), (20, 2), (16, 2)], ['9N', '9E', '9S', '9W'])
+place_block(HOUSE_DATA, 7, [(2, 6), (6, 6), (6, 2), (2, 2)], ['7N', '7E', '7S', '7W'])
+place_block(HOUSE_DATA, 8, [(9, 6), (13, 6), (13, 2), (9, 2)], ['8N', '8E', '8S', '8W'])
+place_block(HOUSE_DATA, 9, [(16, 6), (20, 6), (20, 2), (16, 2)], ['9N', '9E', '9S', '9W'])
