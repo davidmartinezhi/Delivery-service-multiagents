@@ -31,7 +31,9 @@ class Map:
             best_s_order = [init_street] + streets_to_visit + [init_street]
         else: 
             best_s_order = find_best_s_order(self.graph, [init_street] + streets_to_visit + [init_street])
-        return path_to_directions(self.build_path(best_s_order))
+        path = self.build_path(best_s_order)
+        path.append(list(self.graph[init_street].keys())[0])
+        return path_to_directions(path)
     
     def get_directions_naive(self, init_street, streets_to_visit): 
         return path_to_directions(self.build_path([init_street] + streets_to_visit + [init_street])) 
