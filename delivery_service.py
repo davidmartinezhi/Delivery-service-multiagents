@@ -38,7 +38,7 @@ class DeliveryService(Model):
         self.num_steps = 0 
         self.place_houses(house_data)
 
-        self.deliveryCars = {i:DeliveryCar(uuid.uuid4(), self, car_capacity) for i in range(num_cars)}
+        self.delivery_cars = {i:DeliveryCar(uuid.uuid4(), self, car_capacity) for i in range(num_cars)}
 
     def place_houses(self, house_data): 
         for pos in house_data: 
@@ -63,10 +63,10 @@ class DeliveryService(Model):
         return self.num_steps
     
     def get_car_positions(self): 
-        return [{'carId': car_id, 'coord': car.pos} for car_id, car in self.deliveryCars.items() if car.pos != None]
+        return [{'carId': car_id, 'coord': car.pos} for car_id, car in self.delivery_cars.items() if car.pos != None]
     
     def get_streets(self): 
-        streets = [{'streetName': street, 'traffic': traffic}
+        return [{'streetName': street, 'traffic': traffic}
                    for street, traffic in self.traffic_manager.get_traffic().items()]
 
     def get_houses(self):
@@ -90,7 +90,7 @@ class DeliveryService(Model):
         if self.num_steps % per_step == 0: 
             self.package_admin.createHousePackages(num_packages)
 
-        for car in self.deliveryCars.values(): 
+        for car in self.delivery_cars.values(): 
             dc_x, dc_y = self.dispatch_coord
             if car.pos == None and self.mesa_grid[dc_x][dc_y] == None and self.package_admin.numPackagesToDeliver() > 0: 
                 self.mesa_grid.place_agent(car, self.dispatch_coord)

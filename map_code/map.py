@@ -36,7 +36,9 @@ class Map:
         return path_to_directions(path)
     
     def get_directions_naive(self, init_street, streets_to_visit): 
-        return path_to_directions(self.build_path([init_street] + streets_to_visit + [init_street])) 
+        path = self.build_path([init_street] + streets_to_visit + [init_street])
+        path.append(list(self.graph[init_street].keys())[0])
+        return path_to_directions(path) 
 
     def get_directions_BF(self, init_street, streets_to_visit, max_visits = 1): 
         visits = {key: 0 for key in self.graph}

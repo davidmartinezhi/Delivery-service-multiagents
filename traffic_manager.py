@@ -1,7 +1,7 @@
 from random import random, randint, choice 
 
 class TrafficManager(): 
-    def __init__(self, map, streets, congested, min_traffic, max_traffic, max_num_jams = 5, jam_prob = 0.1, phase_duration = 100): 
+    def __init__(self, map, streets, congested, min_traffic, max_traffic, max_num_jams = 5, jam_prob = 0.2, phase_duration = 25): 
         self.map = map
         self.streets = streets
         self.congested_streets = congested
@@ -27,8 +27,7 @@ class TrafficManager():
                 self.affected_streets[street] = traffic 
 
         for _ in range(self.max_num_jams): 
-            rand = random()
-            if self.jam_prob <= rand: 
+            if random() <= self.jam_prob: 
                 randomStreet = choice(self.streets)
                 self.affected_streets[randomStreet] = self.max_traffic
 
