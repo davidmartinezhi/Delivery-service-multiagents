@@ -4,15 +4,14 @@
 ---
 ## Description
 ---
-  This project which was completed in 4 weeks simulates the delivery service from a mail office in a small city with 108 houses distributed in 9 blocks and 3 zip zones, were each street has its own name and every house has its own house number.
 
-  
+  This project simulates through multi-agents the delivery service from a mail office in a small city that consists of 108 houses distributed in 9 blocks and 3 zip code areas, were each street has its own name and every house has its own house number.
 
-  Among this conditions, we include:
-  - Turning red when a lane has no incoming cars
-  - Prioritizing the lanes which have more cars waiting in line
+  The city consists of house agents which create package orders at random, our mail office selects the packages to deliver on each car based on delivery locations closeness and through simulated annealing traces an efficient route for the delivery cars to follow.
 
+  The objective is to improve the efficiency in time per package-delivery and optimizing the routes that delivery cars follow in order to have an efficient gasoline and cars usage. 
 
+  We implemented a smart selection of packages-to-deliver in the mail office and implemented the simulated annealing algorithm for the creation of efficient routes that delivery cars follow.
 
 ---
 ## Agents
