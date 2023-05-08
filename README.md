@@ -16,7 +16,7 @@ The objective is to improve the efficiency in time per package-delivery and opti
 
 ---
 
-### **Delyvery Service(Model)**
+### **Delivery Service(Model)**
 
 The mail office is the model and operates as a super agent and is aware of the houses present in the simulation, the packages needed to be delivered (including delivery information) and the capacity of packages each car can deliver.
 
