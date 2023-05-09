@@ -28,33 +28,40 @@ As seen in the image below, the model includes a city that consists of 108 house
 
 States:
 
-- Number of agents
-- Running
-- width
-- height
-- centre_bounds
 - grid
-- schedule
-- traffic time
-- no car zone (intersection point)
-- centre
-- possible turns
-- traffic light time counter
-- position of traffic lights
-- traffic counter
-- streets
+- grid_width
+- grid_height
+- mesa_grid
+- sim_activation
+- map
+- dispatch_coord
+- dispatch_street
+- dispatch_direction
+- package_rate
+- optimized
+- traffic_manager
+- package_admin
+- sim_data
+- num_steps
+- place_houses
+- deliveryCars
 
 Perceptions:
 
-- Cars present in the simulation
-- position of traffic lights
-- traffic counter
-- streets
+- Houses present in the simulation
+- Delivery cars available
+- Delivery cars packages capacity
+- Delivery cars routes
+- Package to deliver
+- Streets
+- Zip Zones
+- House numbers
+- House coordinates in the map
 
 Actions:
 
-- Create cars and assign random color and directions
-- Changes traffic lights color
+- Smart selection of packages to deliver based on delivery locations closeness
+- Creates delivery cars routes using simulated annealing.
 
 ---
 
