@@ -20,6 +20,8 @@ The objective is to improve the efficiency in time per package-delivery and opti
 
 The mail office is the model and operates as a super agent and is aware of the houses present in the simulation, the packages needed to be delivered (including delivery information) and the capacity of packages each car can deliver.
 
+The mail office selects the packages to deliver on each car based on delivery locations closeness and through simulated annealing traces an efficient route for the delivery cars to follow.
+
 As seen in the image below, the model includes a city that consists of 108 houses distributed in 9 blocks and 3 zip code areas, were each street has its own name and every house has its own house number.
 
 ![Intersection with directions](photos/../images/mapFromSide.png)
@@ -58,30 +60,25 @@ Actions:
 
 ### **House**
 
-The house agents simulates the basic properties of a House and has a random creation of package orders, for our mail office selects the packages to deliver on each car based on delivery locations closeness and through simulated annealing traces an efficient route for the delivery cars to follow.
-
-The car agent simulates the basic functionality of a car in the context of crossing an intersection and is capable of turning in any random directions once it arrives at the intersection, including making a U turn. This helps our simulation because we have cars with behaviour we won't be able to predict and the smart traffic lights must control in an efficient way the crossing of cars. This agent helps us create uncertainty and the turning rate state enables us to test the smart traffic lights with a more extreme case of turning rates.
+The house agents simulates the creation of package orders at random times and contains the information a real life house uses for delivery purposes.
 
 ![Intersection with directions](photos/../images/house.png)
 
 States:
 
-- direction
-- color
-- waiting
-- turning rate
-- next_pos (next position)
+- Coordinate (houseCoord)
+- Zip code (zipNumber)
+- Block (blockNumber)
+- Street Address (streetAddress)
+- House Number (houseNumber)
 
 Perceptions:
 
-- Car is near traffic light and what color it displays
-- Car is before crossroad
-- Car can move to the next cell in the current direction or not
+- Ordered packages that must be delivered
 
 Actions:
 
-- Car can move in any direction when it arrives to the intersection (including a U turn)
-- Car stops when it is near a traffic light that is red or it has cars ahead
+- House can create package orders at random times
 
 ---
 
