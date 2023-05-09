@@ -89,9 +89,11 @@ Actions:
 
 ---
 
-### **Traffic Light**
+### **Delivery Car**
 
 The perceptions and actions of the traffic light are managed by the Crossroad Model which operates as a super agent and manages all traffic lights base on the information it perceives in the traffic
+
+![Intersection with directions](photos/../images/deliveryCars.png)
 
 States:
 
