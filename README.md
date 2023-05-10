@@ -129,29 +129,13 @@ Actions:
 
 ---
 
-### **Field**
-
-The field agent does not interact with it's environment based on perceived information.
-
-It's a decorator that helps the graphical visualization of the program by coloring the field, so the streets and cars displayed in the simulation can be the main focus of attention.
-
-States:
-
-- color
-
----
-
 ## Interaction Between Agents of the same type
 
 ---
 
-### **Car**
+### **Delivery cars**
 
-The car agent follows it's direction and turns in a random direction once it hits the crossroad. The only interactions it has with other car agents is noticing them to avoid a crash.
-
-### **Traffic Light**
-
-Traffic lights don't interact with each other directly. The are puppeteered by the crossroad model to operate traffic in each lane of the intersection.
+A delivery car agent considers the position of other delivery car agents when they are found in its immediate vicinity. If the next position in the model's grid that the delivery car agent is about to move onto is occupied by another vehicle, the car agent suspends its movement until the queued and following position becomes unoccupied. This is the sole interaction that occurs between delivery car agents. 
 
 ---
 
@@ -171,12 +155,14 @@ Traffic lights don't interact with each other directly. The are puppeteered by t
 
 ---
 
-The variables and parameters of the simulation can be adjusted from the graphical user interface of the visualization, which are:
+In the entry point of the simulation the following parameters are defined when initiated: 
+- Number of steps: how many steps the simulation lasts before ending and returning a Python dictionary containing all relevant data from each step. A step is a concept pertaining to the Mesa framework, they are handled during the simulation by the framework. 
+- Number of cars: defines the number of delivery car agents that can be present at once in the simulation's map.
+- Car capacity: how many packages each delivery car can hold at once during a tour. 
+- Optimized: a boolean value which determines whether or not the operation of the simulation's delivery service is optimized. When not optimized, as a delivery car is about to begin a tour, the order of houses to follow in delivering all assigned packages is chosen arbitrarily (houses associated with packages "loaded" first "into" the delivery car are given definitive priority). When optimized, an algorithm which uses simulated annealing computes beforehand the optimal order of houses to follow during the tour. 
 
-- Number of cars
-- Half Length(dimentions of map)
-- Traffic timer
-- Turning rate (Turning rate of cars)
+
+Other relevant aspects of the simulation can be modified to alter its behavior, although not at its entry point. Such as those related to the SA algorithm (temperature, cooling factor, number of restarts), the magnitude and patterns of the simulated vehicular traffic and its susceptibility to isolated congestions, and the rate with which package orders are created by the participating house agents. 
 
 ---
 
